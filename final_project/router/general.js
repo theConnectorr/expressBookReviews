@@ -75,3 +75,39 @@ public_users.get('/review/:isbn',function (req, res) {
 });
 
 module.exports.general = public_users;
+
+async function getAllBooks() {
+  try {
+    const response = await axios.get('http://localhost:5000/');
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function getBookByISBN(isbn) {
+  try {
+    const response = await axios.get(`http://localhost:5000/isbn/${isbn}`);
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function getBooksByAuthor(author) {
+  try {
+    const response = await axios.get(`http://localhost:5000/author/${encodeURI(author)}`);
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function getBooksByTitle(title) {
+  try {
+    const response = await axios.get(`http://localhost:5000/title/${encodeURI(title)}`);
+    console.log(response);
+  } catch (error) {
+    console.error(error);
+  }
+}

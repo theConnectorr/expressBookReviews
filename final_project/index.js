@@ -17,7 +17,7 @@ app.use("/customer", session({
 app.use("/customer/auth/*", function auth(req, res, next) {
     // check if the authorization header is provided
     if (!req.session.authorization) 
-        res.status(403).json({ messaage: "User not logged in"});
+        res.status(403).send(JSON.stringify({ messaage: "User not logged in"}, null, 4));
 
     const accessToken = req.session.authorization["accessToken"];
     jwt.verify(accessToken, "my_secret", (err, decoded) => {

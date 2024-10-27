@@ -43,7 +43,7 @@ regd_users.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password)
-    return res.status(401).send("Invalid credentials");
+    return res.status(401).send(JSON.stringify({ message: "Invalid credentials"}, null, 4));
 
   if (authenticatedUser(username, password)) {
     const accessToken = jwt.sign({ username }, "my_secret", { expiresIn: 70 });
@@ -53,9 +53,9 @@ regd_users.post("/login", (req, res) => {
       username
     }
 
-    return res.status(200).send("Successfully logged in");
+    return res.status(200).send(JSON.stringify({ message: "Successfully logged in"}, null, 4));
   } else {
-    return res.status(401).send("Invalid credentials");
+    return res.status(401).send(JSON.stringify({ message: "Invalid credentials"}, null, 4));
   }
 });
 
@@ -66,8 +66,31 @@ regd_users.get("/auth/test", (req, res) => {
 
   // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  
+  const isbn = req.params.isbn;
+  const username = req.session.authorization.username;
+  const { review } = req.body;
+
+  let book = books[isbn];
+  if (!book)
+    return res.status(404).send(JSON.stringify({ message: "book not found"}, null, 4));
+
+  book.reviews[username] = review;
+
+  return res.status(200).send(JSON.stringify({ message: "successfully added review", book }, null, 4));
 });
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const isbn = req.params.isbn;
+  const username = req.session.authorization.username;
+
+  let book = books[isbn];
+  if (!book)
+    return res.status(404).send(JSON.stringify({ message: "book not found"}, null, 4));
+
+  delete book.reviews[username];
+
+  return res.status(200).send(JSON.stringify({ message: "successfully deleted review", book }, null, 4));
+})
 
 module.exports.authenticated = regd_users;
 module.exports.isValid = isValid;
