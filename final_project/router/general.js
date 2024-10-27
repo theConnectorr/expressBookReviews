@@ -6,8 +6,18 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const { username, password } = req.body;
+  
+  if (!username || !password)
+    return res.status(400).send(JSON.stringify({ message: "Invalid username or password" }, null, 4));
+  
+  const existedUser = users.find(user => user.username === username);
+
+  if (existedUser)
+    return res.status(400).send(JSON.stringify({ message: "User already exists" }, null, 4));
+
+  users.push({ username, password });
+  return res.status(201).send(JSON.stringify({ message: "User resgistered successfully!" }, null, 4));
 });
 
 // Get the book list available in the shop
@@ -20,7 +30,7 @@ public_users.get('/isbn/:isbn',function (req, res) {
   const isbn = req.params.isbn;
   const foundBook = books[isbn];
   if (!foundBook)
-    return res.status(404).json({ message: "book not found"});
+    return res.status(404).send(JSON.stringify({ message: "book not found"}, null, 4));
 
   return res.status(200).send(JSON.stringify(foundBook, null, 4));
 });
@@ -34,7 +44,7 @@ public_users.get('/author/:author',function (req, res) {
       foundBook.push(books[i]);
 
   if (foundBook.length === 0)
-    return res.status(404).json({ message: "book not found"});
+    return res.status(404).send(JSON.stringify({ message: "book not found"}, null, 4));
 
   return res.status(200).send(JSON.stringify(foundBook, null, 4));
 });
@@ -48,7 +58,7 @@ public_users.get('/title/:title',function (req, res) {
       foundBook.push(books[i]);
 
   if (foundBook.length === 0)
-    return res.status(404).json({ message: "book not found"});
+    return res.status(404).send(JSON.stringify({ message: "book not found"}, null, 4));
 
   return res.status(200).send(JSON.stringify(foundBook, null, 4));
 });
@@ -59,7 +69,7 @@ public_users.get('/review/:isbn',function (req, res) {
   const foundBook = books[isbn];
 
   if (!foundBook)
-    return res.status(404).json({ message: "book not found"});
+    return res.status(404).send(JSON.stringify({ message: "book not found"}, null, 4));
 
   return res.status(200).send(JSON.stringify({ reviews: foundBook.reviews }, null, 4));
 });
